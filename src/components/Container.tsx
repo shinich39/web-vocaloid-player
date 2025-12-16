@@ -66,12 +66,7 @@ export default function Container() {
     })();
 
     ;(async () => {
-      const response = await fetch("/web-vocaloid-player/datasets/data.json.gz", {
-        method: "GET",
-        headers: {
-          "Content-Encoding": "gzip",
-        }
-      });
+      const response = await fetch("/web-vocaloid-player/datasets/data.json.gz", { method: "GET" });
       if (response.headers.get("content-encoding") === "gzip") {
         const json = await response.json() as Data[];
         setData(json);
