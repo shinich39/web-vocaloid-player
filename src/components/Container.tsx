@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import pako from "pako";
+// import pako from "pako";
 
 const latestTemplate = {
   "nicovideo": {
@@ -60,22 +60,22 @@ export default function Container() {
 
   useEffect(() => {
     ;(async () => {
-      const response = await fetch("/datasets/latest.json", { method: "GET" });
+      const response = await fetch("https://shinich39.github.io/web-vocaloid-player/datasets/latest.json", { method: "GET" });
       const json = await response.json() as Latest;
       setLatest(json);
     })();
 
     ;(async () => {
-      const response = await fetch("/datasets/data.json.gz", { method: "GET" });
+      const response = await fetch("https://shinich39.github.io/web-vocaloid-player/datasets/data.json.gz", { method: "GET" });
       if (response.headers.get("content-encoding") === "gzip") {
         const json = await response.json() as Data[];
         setData(json);
       } else {
-        const arrayBuffer = await response.arrayBuffer();
-        const buffer = new Uint8Array(arrayBuffer);
-        const str = pako.ungzip(buffer, { to: "string" });
-        const json = JSON.parse(str) as Data[];
-        setData(json);
+        // const arrayBuffer = await response.arrayBuffer();
+        // const buffer = new Uint8Array(arrayBuffer);
+        // const str = pako.ungzip(buffer, { to: "string" });
+        // const json = JSON.parse(str) as Data[];
+        // setData(json);
       }
     })();
   }, []);
