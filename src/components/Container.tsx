@@ -85,7 +85,7 @@ export default function Container() {
   }, []);
 
   useEffect(() => {
-    if (!latest || !data) {
+    if (!latest || data.length < 1) {
       return;
     }
 
@@ -133,14 +133,14 @@ export default function Container() {
               : <>
                   <li>Nicovideo: {latest.nicovideo.size}, {latest.nicovideo.updatedAt}</li>
                   <li>Piapro: {latest.piapro.size}, {latest.piapro.updatedAt}</li>
-                  <li>DC (Mixed types): {latest.dc.size}, {latest.dc.updatedAt}</li>
+                  <li>DC (Mixed type): {latest.dc.size}, {latest.dc.updatedAt}</li>
                 </>
           }
         </ul>
       </section>
 
       <section>
-        <h2>Search</h2>
+        <h2>Filter</h2>
 
         <div>
           {
@@ -164,13 +164,13 @@ export default function Container() {
           }
         </div>
 
-        <div>
+        {/* <div>
           <input
             type="text"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value) }
             placeholder="Type text to search"/>
-        </div>
+        </div> */}
 
       </section>
 
@@ -183,23 +183,26 @@ export default function Container() {
           <button onClick={nextHandler}>Next</button>
         </div>
 
-        <ol>
+        <br />
+
+        <div>
           {
             displayedPlaylist.map((item, i) => {
               return (
-                <li key={`playlist-${i}`}>
+                <div key={`playlist-${i}`}>
+                  {playlistOffset + i}.
+                  {" "}
                   [{item.type}]
                   {" "}
-                  {item.title}
+                  <a href={item.originalUrl}>{item.title}</a>
                   {" "}
-                  <button onClick={() => playHandler(item)}>Play</button>
+                  <button onClick={() => playHandler(item)} disabled={item.type === "piapro"}>Play</button>
                   {" "}
-                  <a href={item.originalUrl}>Link</a>
-                </li>
+                </div>
               )
             })
           }
-        </ol>
+        </div>
         
       </section>
 
