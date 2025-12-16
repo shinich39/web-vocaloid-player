@@ -9,6 +9,6 @@ export default defineConfig({
 
   output: "static",
   outDir: "docs",
-  site: "https://raw.githubusercontent.com/shinich39/web-vocaloid-player",
-  base: "/main/docs",
+  // site: "https://raw.githubusercontent.com/shinich39/web-vocaloid-player",
+  base: "https://raw.githubusercontent.com/shinich39/web-vocaloid-player/main/docs",
 });
