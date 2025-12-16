@@ -194,7 +194,7 @@ export default function Container() {
                   {" "}
                   [{item.type}]
                   {" "}
-                  <a href={item.originalUrl}>{item.title}</a>
+                  <a href={item.originalUrl} target="_blank">{item.title}</a>
                   {" "}
                   <button onClick={() => playHandler(item)} disabled={item.type === "piapro"}>Play</button>
                   {" "}
@@ -211,7 +211,7 @@ export default function Container() {
           playing &&
             <>
               <h3>
-                <a href={playing.originalUrl}>
+                <a href={playing.originalUrl} target="_blank">
                   {playing.title}
                 </a>
               </h3>
