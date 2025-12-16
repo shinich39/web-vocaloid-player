@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-// import pako from "pako";
+import pako from "pako";
 
 const latestTemplate = {
   "nicovideo": {
@@ -61,7 +61,7 @@ export default function Container() {
   useEffect(() => {
     // https://raw.githubusercontent.com/shinich39/web-vocaloid-player/main/datasets/latest.json
     const base = `https://raw.githubusercontent.com/shinich39/web-vocaloid-player/main`;
-    
+
     ;(async () => {
       // const response = await fetch("/web-vocaloid-player/datasets/latest.json", { method: "GET" });
       const response = await fetch(base + "/datasets/latest.json", { method: "GET" });
@@ -75,11 +75,11 @@ export default function Container() {
         const json = await response.json() as Data[];
         setData(json);
       } else {
-        // const arrayBuffer = await response.arrayBuffer();
-        // const buffer = new Uint8Array(arrayBuffer);
-        // const str = pako.ungzip(buffer, { to: "string" });
-        // const json = JSON.parse(str) as Data[];
-        // setData(json);
+        const arrayBuffer = await response.arrayBuffer();
+        const buffer = new Uint8Array(arrayBuffer);
+        const str = pako.ungzip(buffer, { to: "string" });
+        const json = JSON.parse(str) as Data[];
+        setData(json);
       }
     })();
   }, []);
