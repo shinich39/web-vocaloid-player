@@ -59,14 +59,18 @@ export default function Container() {
   }
 
   useEffect(() => {
+    // https://raw.githubusercontent.com/shinich39/web-vocaloid-player/main/datasets/latest.json
+    const base = `https://raw.githubusercontent.com/shinich39/web-vocaloid-player/main`;
+    
     ;(async () => {
-      const response = await fetch("/web-vocaloid-player/datasets/latest.json", { method: "GET" });
+      // const response = await fetch("/web-vocaloid-player/datasets/latest.json", { method: "GET" });
+      const response = await fetch(base + "/datasets/latest.json", { method: "GET" });
       const json = await response.json() as Latest;
       setLatest(json);
     })();
 
     ;(async () => {
-      const response = await fetch("/web-vocaloid-player/datasets/data.json.gz", { method: "GET" });
+      const response = await fetch(base + "/datasets/data.json.gz", { method: "GET" });
       if (response.headers.get("content-encoding") === "gzip") {
         const json = await response.json() as Data[];
         setData(json);
