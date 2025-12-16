@@ -60,13 +60,18 @@ export default function Container() {
 
   useEffect(() => {
     ;(async () => {
-      const response = await fetch("./datasets/latest.json", { method: "GET" });
+      const response = await fetch("/web-vocaloid-player/datasets/latest.json", { method: "GET" });
       const json = await response.json() as Latest;
       setLatest(json);
     })();
 
     ;(async () => {
-      const response = await fetch("./datasets/data.json.gz", { method: "GET" });
+      const response = await fetch("/web-vocaloid-player/datasets/data.json.gz", {
+        method: "GET",
+        headers: {
+          "Content-Encoding": "gzip",
+        }
+      });
       if (response.headers.get("content-encoding") === "gzip") {
         const json = await response.json() as Data[];
         setData(json);
