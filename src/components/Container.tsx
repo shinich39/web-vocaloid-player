@@ -11,7 +11,7 @@ export default function Container() {
   const [playlistOffset, setPlaylistOffset] = useState(0);
   const [playlistLimit, setPlaylistLimit] = useState(10);
 
-  const [searchTypes, setSearchTypes] = useState<string[]>(["nicovideo", "piapro", "youtube"]);
+  const [searchProviders, setSearchProviders] = useState<string[]>(["nicovideo", "piapro", "youtube"]);
   const [searchText, setSearchText] = useState("");
 
   function shuffle<T>(array: T[]) {
@@ -109,7 +109,7 @@ export default function Container() {
 
     for (const d of data) {
 
-      if (!searchTypes.includes(d.type)) {
+      if (!searchProviders.includes(d.provider)) {
         continue;
       }
 
@@ -123,7 +123,7 @@ export default function Container() {
     shuffle(arr);
 
     setFilteredPlaylist(arr);
-  }, [latest, data, searchText, searchTypes]);
+  }, [latest, data, searchText, searchProviders]);
 
   useEffect(() => {
     const arr = filteredPlaylist.slice(playlistOffset, playlistOffset + playlistLimit);
@@ -173,20 +173,20 @@ export default function Container() {
 
         <div>
           {
-            ["nicovideo", "piapro", "youtube"].map((type, i) => {
-              const isChecked = searchTypes.includes(type);
+            ["nicovideo", "piapro", "youtube"].map((provider, i) => {
+              const isChecked = searchProviders.includes(provider);
               return (
-                <label key={`type-checkbox-${i}`}>
+                <label key={`provider-checkbox-${i}`}>
                   <input
                     type="checkbox"
-                    value={type}
+                    value={provider}
                     onClick={() => {
                       !isChecked
-                        ? setSearchTypes([...new Set(searchTypes), type])
-                        : setSearchTypes(searchTypes.filter((t) => t !== type));
+                        ? setSearchProviders([...new Set(searchProviders), provider])
+                        : setSearchProviders(searchProviders.filter((t) => t !== provider));
                     }}
                     defaultChecked={isChecked} />
-                  {type}
+                  {provider}
                 </label>
               )
             })
