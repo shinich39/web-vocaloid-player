@@ -1,39 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import pako from "pako";
-
-const latestTemplate = {
-  "nicovideo": {
-      "size": 315025,
-      "updatedAt": "2025-12-16T07:42:42.942Z"
-  },
-  "piapro": {
-      "size": 230567,
-      "updatedAt": "2025-12-16T07:45:19.841Z"
-  },
-  "dc": {
-      "size": 46184,
-      "updatedAt": "2025-12-16T07:44:43.468Z"
-  },
-  "size": 566467,
-  "updatedAt": "2025-12-16T07:45:19.841Z"
-} as const;
-
-type Latest = typeof latestTemplate;
-type Data = {
-  type: "youtube" | "nicovideo" | "piapro",
-  title: string,
-  user?: string,
-  id: string,
-  originalUrl: string,
-  // embedUrl: string,
-}
+import type { PlayerItem, PlayerLatest } from "../types/common";
 
 export default function Container() {
-  const [latest, setLatest] = useState<Latest>();
-  const [data, setData] = useState<Data[]>([]);
-  const [playing, setPlaying] = useState<Data | null>(null);
-  const [filteredPlaylist, setFilteredPlaylist] = useState<Data[]>([]);
-  const [displayedPlaylist, setDisplayedPlaylist] = useState<Data[]>([]);
+  const [latest, setLatest] = useState<PlayerLatest>();
+  const [data, setData] = useState<PlayerItem[]>([]);
+  const [playing, setPlaying] = useState<PlayerItem | null>(null);
+  const [filteredPlaylist, setFilteredPlaylist] = useState<PlayerItem[]>([]);
+  const [displayedPlaylist, setDisplayedPlaylist] = useState<PlayerItem[]>([]);
   const [playlistOffset, setPlaylistOffset] = useState(0);
   const [playlistLimit, setPlaylistLimit] = useState(10);
 
@@ -54,9 +28,43 @@ export default function Container() {
     setPlaylistOffset(v);
   }
 
-  const playHandler = (d: Data) => {
+  const playHandler = (d: PlayerItem) => {
     setPlaying(d);
   }
+
+  function createUrl(provider: string, id: string) {
+    switch(provider) {
+      case "youtube": return createYoutubeUrl(id);
+      case "nicovideo": return createNicoUrl(id);
+      case "piapro": return createPiaproUrl(id);
+    }
+    return "";
+  }
+
+  function createYoutubeUrl(id: string) {
+    return `https://www.youtube.com/watch?v=${id}`;
+  }
+
+  function createYoutubeEmbedUrl(id: string) {
+    return `https://www.youtube.com/embed/${id}`;
+  }
+
+  function createNicoUrl(id: string) {
+    return `https://www.nicovideo.jp/watch/${id}`;
+  }
+
+  function createNicoEmbedUrl(id: string) {
+    return `https://embed.nicovideo.jp/watch/${id}`;
+  }
+
+  function createPiaproUrl(id: string) {
+    return `https://piapro.jp/t/${id}`;
+  }
+
+  function createPiaproEmbedUrl(id: string) {
+    return `https://piapro.jp/widget/${id}`;
+  }
+
 
   useEffect(() => {
     // https://raw.githubusercontent.com/shinich39/web-vocaloid-player/main/datasets/latest.json
@@ -65,20 +73,20 @@ export default function Container() {
     ;(async () => {
       // const response = await fetch("/web-vocaloid-player/datasets/latest.json", { method: "GET" });
       const response = await fetch(base + "/datasets/latest.json", { method: "GET" });
-      const json = await response.json() as Latest;
+      const json = await response.json() as PlayerLatest;
       setLatest(json);
     })();
 
     ;(async () => {
       const response = await fetch(base + "/datasets/data.json.gz", { method: "GET" });
       if (response.headers.get("content-encoding") === "gzip") {
-        const json = await response.json() as Data[];
+        const json = await response.json() as PlayerItem[];
         setData(json);
       } else {
         const arrayBuffer = await response.arrayBuffer();
         const buffer = new Uint8Array(arrayBuffer);
         const str = pako.ungzip(buffer, { to: "string" });
-        const json = JSON.parse(str) as Data[];
+        const json = JSON.parse(str) as PlayerItem[];
         setData(json);
       }
     })();
@@ -97,7 +105,7 @@ export default function Container() {
       return;
     }
 
-    const arr: Data[] = [];
+    const arr: PlayerItem[] = [];
 
     for (const d of data) {
 
@@ -126,17 +134,38 @@ export default function Container() {
     <>
       <section>
         <h2>Datasets</h2>
-        <ul>
-          {
-            !latest || !data
-              ? <li>Loading...</li>
-              : <>
-                  <li>Nicovideo: {latest.nicovideo.size}, {latest.nicovideo.updatedAt}</li>
-                  <li>Piapro: {latest.piapro.size}, {latest.piapro.updatedAt}</li>
-                  <li>DC (Mixed type): {latest.dc.size}, {latest.dc.updatedAt}</li>
-                </>
-          }
-        </ul>
+
+        
+        {
+          !latest || !data
+            ? <div>Loading...</div>
+            : <table>
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Size</th>
+                    <th>Updated</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Nicovideo</td>
+                    <td>{latest.nicovideoSize}</td>
+                    <td>{new Date(latest.nicovideoUpdatedAt).toISOString()}</td>
+                  </tr>
+                  <tr>
+                    <td>Piapro</td>
+                    <td>{latest.piaproSize}</td>
+                    <td>{new Date(latest.piaproUpdatedAt).toISOString()}</td>
+                  </tr>
+                  <tr>
+                    <td>DC (Mixed type)</td>
+                    <td>{latest.dcSize}</td>
+                    <td>{new Date(latest.dcUpdatedAt).toISOString()}</td>
+                  </tr>
+                </tbody>
+              </table>
+        }
       </section>
 
       <section>
@@ -194,7 +223,7 @@ export default function Container() {
                   {" "}
                   [{item.type}]
                   {" "}
-                  <a href={item.originalUrl} target="_blank">{item.title}</a>
+                  <a href={createUrl(item.provider, item.id)} target="_blank">{item.title}</a>
                   {" "}
                   <button onClick={() => playHandler(item)} disabled={item.type === "piapro"}>Play</button>
                   {" "}
@@ -211,13 +240,13 @@ export default function Container() {
           playing &&
             <>
               <h3>
-                <a href={playing.originalUrl} target="_blank">
+                <a href={createUrl(playing.provider, playing.id)} target="_blank">
                   {playing.title}
                 </a>
               </h3>
 
               {
-                playing.type === "youtube"
+                playing.provider === "youtube"
                   ? <>
                       <iframe width="560" height="315"
                         src={"https://www.youtube.com/embed/" + playing.id}
@@ -226,7 +255,7 @@ export default function Container() {
                         allowFullScreen>
                       </iframe>
                     </>
-                  : playing.type === "nicovideo"
+                  : playing.provider === "nicovideo"
                   ? <>
                       <iframe
                         width="640"
@@ -235,7 +264,7 @@ export default function Container() {
                         allowFullScreen
                       ></iframe>
                     </>
-                  : playing.type === "piapro"
+                  : playing.provider === "piapro"
                   ? <>
                       <iframe
                         src={"https://piapro.jp/widget/" + playing.id}

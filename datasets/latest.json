@@ -1,16 +1,10 @@
 {
-  "nicovideo": {
-    "size": 315025,
-    "updatedAt": "2025-12-16T07:42:42.942Z"
-  },
-  "piapro": {
-    "size": 230567,
-    "updatedAt": "2025-12-16T07:45:19.841Z"
-  },
-  "dc": {
-    "size": 46184,
-    "updatedAt": "2025-12-16T07:44:43.468Z"
-  },
-  "size": 566467,
-  "updatedAt": "2025-12-16T07:45:19.841Z"
+  "nicovideoSize": 315212,
+  "nicovideoUpdatedAt": 1766140794952,
+  "piaproSize": 230617,
+  "piaproUpdatedAt": 1766140934442,
+  "dcSize": 46549,
+  "dcUpdatedAt": 1766140897563,
+  "totalSize": 566048,
+  "totalUpdatedAt": 1766140934442
 }
